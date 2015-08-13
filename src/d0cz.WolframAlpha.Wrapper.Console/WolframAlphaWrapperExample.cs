@@ -33,7 +33,7 @@ namespace d0cz.WolframAlpha.Wrapper.Console
 
             //Use the engine to get a response, from the application ID specified, and the search terms.
             //Engine.LoadResponse(WolframAlphaSearchTerms, wolframAlphaApplicationId);
-            Engine.LoadResponse(new WolframAlphaQuery() {Format = "html", AllowCaching = false, APIKey = Engine.ApiKey, Query = WolframAlphaSearchTerms});
+            Engine.LoadResponse(new WolframAlphaQuery() {Format = "plaintext", AllowCaching = false, APIKey = Engine.ApiKey, Query = WolframAlphaSearchTerms});
 
             //Print out a message saying that the last task was successful.
             Output("Response injected.", 0, ConsoleColor.White);
@@ -70,11 +70,11 @@ namespace d0cz.WolframAlpha.Wrapper.Console
                     Output("Sub pod " + subPodNumber, 3, ConsoleColor.Magenta);
                     Output("Title: \"" + subItem.Title + "\"", 3, ConsoleColor.White);
                     Output("Pod text: \"" + subItem.PodText + "\"", 3, ConsoleColor.White);
-                    Output("Pod image title: \"" + subItem.PodImage.Title + "\"", 3, ConsoleColor.White);
-                    Output("Pod image width: " + subItem.PodImage.Width, 3, ConsoleColor.White);
-                    Output("Pod image height: " + subItem.PodImage.Height, 3, ConsoleColor.White);
-                    Output("Pod image location: \"" + subItem.PodImage.Location + "\"", 3, ConsoleColor.White);
-                    Output("Pod image description text: \"" + subItem.PodImage.HoverText + "\"", 3, ConsoleColor.White);
+                    Output("Pod image title: \"" + subItem.PodImage?.Title + "\"", 3, ConsoleColor.White);
+                    Output("Pod image width: " + subItem.PodImage?.Width, 3, ConsoleColor.White);
+                    Output("Pod image height: " + subItem.PodImage?.Height, 3, ConsoleColor.White);
+                    Output("Pod image location: \"" + subItem.PodImage?.Location + "\"", 3, ConsoleColor.White);
+                    Output("Pod image description text: \"" + subItem.PodImage?.HoverText + "\"", 3, ConsoleColor.White);
 
                     subPodNumber += 1;
                 }

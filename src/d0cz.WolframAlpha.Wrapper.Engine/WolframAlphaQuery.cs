@@ -107,7 +107,7 @@ namespace d0cz.WolframAlpha.Wrapper.Engine
 
         public string[] PodTitles => _waPodTitle.Split(new[] { "&assumption=" }, StringSplitOptions.RemoveEmptyEntries);
 
-        public string FullQueryString => $"?appid= {_waApiKey} &moreoutput= {MoreOutput} &timelimit= {TimeLimit} &format= {_waFormat} &input= {_waQuery + _waAssumption + _waSubstitution}";
+        public string FullQueryString => $"?appid={_waApiKey}&moreoutput={MoreOutput}&timelimit={TimeLimit}&format={_waFormat}&input={_waQuery + _waAssumption + _waSubstitution}";
 
         public class WolframAlphaQueryFormat
         {

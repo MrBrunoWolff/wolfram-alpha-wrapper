@@ -43,7 +43,7 @@ namespace d0cz.WolframAlpha.Wrapper.Engine
                 throw new Exception("Wolfram Alpha does not allow asynchronous operations while the format for the query is not set to \"HTML\".");
             }
 
-            HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create("http://preview.wolframalpha.com/api/v1/validatequery.jsp" + Query.FullQueryString);
+            HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create("http://api.wolframalpha.com/v2/validatequery.jsp" + Query.FullQueryString);
             webRequest.KeepAlive = true;
             string response = new StreamReader(webRequest.GetResponse().GetResponseStream()).ReadToEnd();
 
@@ -147,7 +147,7 @@ namespace d0cz.WolframAlpha.Wrapper.Engine
             if (query.Asynchronous && query.Format == WolframAlphaQuery.WolframAlphaQueryFormat.Html)
                 throw new Exception("Wolfram Alpha does not allow asynchronous operations while the format for the query is not set to \"HTML\".");
 
-            HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create("http://preview.wolframalpha.com/api/v1/query.jsp" + query.FullQueryString);
+            HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create("http://api.wolframalpha.com/v2/query.jsp" + query.FullQueryString);
             webRequest.KeepAlive = true;
 
             string response = new StreamReader(webRequest.GetResponse().GetResponseStream()).ReadToEnd();
