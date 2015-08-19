@@ -1,47 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace d0cz.WolframAlpha.Wrapper.Engine
 {
     public class WolframAlphaValidationResult
     {
-        private string WA_ParseData;
-        private List<WolframAlphaAssumption> WA_Assumptions;
-        private bool WA_Success;
-        private bool WA_Error;
+        private string _parseData;
+        private List<WolframAlphaAssumption> _assumptions;
+        private bool _success;
+        private bool _error;
+        private double _timing;
 
-        private double WA_Timing;
         public bool Success
         {
-            get { return WA_Success; }
-            set { WA_Success = value; }
+            get { return _success; }
+            set { _success = value; }
         }
 
         public string ParseData
         {
-            get { return WA_ParseData; }
-            set { WA_ParseData = value; }
+            get { return _parseData; }
+            set { _parseData = value; }
         }
 
         public List<WolframAlphaAssumption> Assumptions
         {
-            get { return WA_Assumptions; }
-            set { WA_Assumptions = value; }
+            get { return _assumptions; }
+            set { _assumptions = value; }
         }
 
         public bool ErrorOccured
         {
-            get { return WA_Error; }
-            set { WA_Error = value; }
+            get { return _error; }
+            set { _error = value; }
         }
 
         public double Timing
         {
-            get { return WA_Timing; }
-            set { WA_Timing = value; }
+            get { return _timing; }
+            set { _timing = value; }
         }
 
     }

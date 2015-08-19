@@ -9,7 +9,7 @@ namespace d0cz.WolframAlpha.Wrapper.Engine
 {
     public class WolframAlphaEngine
     {
-        private string _apiKey;
+        private readonly string _apiKey;
         private WolframAlphaQueryResult _queryResult;
         private WolframAlphaValidationResult _validationResult;
 
@@ -26,48 +26,41 @@ namespace d0cz.WolframAlpha.Wrapper.Engine
 
         #region "Overloads of ValidateQuery"
 
-        public WolframAlphaValidationResult ValidateQuery(WolframAlphaQuery Query)
+        public WolframAlphaValidationResult ValidateQuery(WolframAlphaQuery query)
         {
-
-            if (string.IsNullOrEmpty(Query.APIKey))
+            if (string.IsNullOrEmpty(query.APIKey))
             {
-                if (string.IsNullOrEmpty(this.ApiKey))
-                {
+                if (string.IsNullOrEmpty(ApiKey))
                     throw new Exception("To use the Wolfram Alpha API, you must specify an API key either through the parsed WolframAlphaQuery, or on the WolframAlphaEngine itself.");
-                }
-                Query.APIKey = this.ApiKey;
+
+                query.APIKey = ApiKey;
             }
 
-            if (Query.Asynchronous == true && Query.Format == WolframAlphaQuery.WolframAlphaQueryFormat.Html)
-            {
+            if (query.Asynchronous && query.Format == WolframAlphaQueryFormatEnum.Html)
                 throw new Exception("Wolfram Alpha does not allow asynchronous operations while the format for the query is not set to \"HTML\".");
-            }
 
-            HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create("http://api.wolframalpha.com/v2/validatequery.jsp" + Query.FullQueryString);
+            HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create("http://api.wolframalpha.com/v2/validatequery.jsp" + query.FullQueryString);
             webRequest.KeepAlive = true;
             string response = new StreamReader(webRequest.GetResponse().GetResponseStream()).ReadToEnd();
 
             return ValidateQuery(response);
-
         }
 
-        public WolframAlphaValidationResult ValidateQuery(string Response)
+        public WolframAlphaValidationResult ValidateQuery(string response)
         {
+            XmlDocument document = new XmlDocument();
+            WolframAlphaValidationResult result = null;
 
-            XmlDocument Document = new XmlDocument();
-            WolframAlphaValidationResult Result = null;
             try
             {
-                Document.LoadXml(Response);
-                Result = ValidateQuery(Document);
+                document.LoadXml(response);
+                result = ValidateQuery(document);
             }
             catch
             {
             }
-            Document = null;
 
-            return Result;
-
+            return result;
         }
 
         public WolframAlphaValidationResult ValidateQuery(XmlDocument response)
@@ -81,12 +74,11 @@ namespace d0cz.WolframAlpha.Wrapper.Engine
             _validationResult = new WolframAlphaValidationResult();
 
             _validationResult.Success = ToBoolean(mainNode.Attributes?["success"]);
-
             _validationResult.ErrorOccured = ToBoolean(mainNode.Attributes?["error"]);
-
             _validationResult.Timing = ToDouble(mainNode.Attributes?["timing"]);
-
             _validationResult.ParseData = mainNode.SelectNodes("parsedata")?.Item(0)?.InnerText;
+
+            //PARSE TIMING?
 
             _validationResult.Assumptions = new List<WolframAlphaAssumption>();
 
@@ -144,7 +136,7 @@ namespace d0cz.WolframAlpha.Wrapper.Engine
                 query.APIKey = _apiKey;
             }
 
-            if (query.Asynchronous && query.Format == WolframAlphaQuery.WolframAlphaQueryFormat.Html)
+            if (query.Asynchronous && query.Format == WolframAlphaQueryFormatEnum.Html)
                 throw new Exception("Wolfram Alpha does not allow asynchronous operations while the format for the query is not set to \"HTML\".");
 
             HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create("http://api.wolframalpha.com/v2/query.jsp" + query.FullQueryString);
@@ -157,7 +149,6 @@ namespace d0cz.WolframAlpha.Wrapper.Engine
 
         public WolframAlphaQueryResult LoadResponse(string response)
         {
-
             XmlDocument document = new XmlDocument();
             WolframAlphaQueryResult result = null;
             try
@@ -168,14 +159,16 @@ namespace d0cz.WolframAlpha.Wrapper.Engine
             catch
             {
             }
-            document = null;
 
             return result;
-
         }
+
         public WolframAlphaQueryResult LoadResponse(XmlDocument response)
         {
             Thread.Sleep(1);
+
+            if (response == null)
+                throw new ArgumentNullException(nameof(response));
 
             XmlNode mainNode = response.SelectNodes("/queryresult").Item(0);
             _queryResult = new WolframAlphaQueryResult();
@@ -186,23 +179,22 @@ namespace d0cz.WolframAlpha.Wrapper.Engine
             _queryResult.TimedOut = mainNode.Attributes["timedout"].Value;
             _queryResult.DataTypes = mainNode.Attributes["datatypes"].Value;
             _queryResult.Pods = new List<WolframAlphaPod>();
-
-
-            foreach (XmlNode Node in mainNode.SelectNodes("pod"))
+            
+            foreach (XmlNode node in mainNode.SelectNodes("pod"))
             {
                 Thread.Sleep(1);
 
-                WolframAlphaPod Pod = new WolframAlphaPod
+                WolframAlphaPod pod = new WolframAlphaPod
                 {
-                    Title = Node.Attributes["title"].Value,
-                    Scanner = Node.Attributes["scanner"].Value,
-                    Position = ToInt32(Node.Attributes["position"]),
-                    ErrorOccured = ToBoolean(Node.Attributes["error"]),
-                    NumberOfSubPods = ToInt32(Node.Attributes["numsubpods"]),
+                    Title = node.Attributes["title"].Value,
+                    Scanner = node.Attributes["scanner"].Value,
+                    Position = ToInt32(node.Attributes["position"]),
+                    ErrorOccured = ToBoolean(node.Attributes["error"]),
+                    NumberOfSubPods = ToInt32(node.Attributes["numsubpods"]),
                     SubPods = new List<WolframAlphaSubPod>()
                 };
 
-                foreach (XmlNode subNode in Node.SelectNodes("subpod"))
+                foreach (XmlNode subNode in node.SelectNodes("subpod"))
                 {
                     Thread.Sleep(1);
 
@@ -210,32 +202,30 @@ namespace d0cz.WolframAlpha.Wrapper.Engine
                     subPod.Title = subNode.Attributes["title"].Value;
 
 
-                    foreach (XmlNode ContentNode in subNode.SelectNodes("plaintext"))
+                    foreach (XmlNode contentNode in subNode.SelectNodes("plaintext"))
                     {
                         Thread.Sleep(1);
 
-                        subPod.PodText = ContentNode.InnerText;
-
+                        subPod.PodText = contentNode.InnerText;
                     }
 
-
-                    foreach (XmlNode ContentNode in subNode.SelectNodes("img"))
+                    foreach (XmlNode contentNode in subNode.SelectNodes("img"))
                     {
                         Thread.Sleep(1);
 
-                        WolframAlphaImage Image = new WolframAlphaImage();
-                        Image.Location = new Uri(ContentNode.Attributes["src"].Value);
-                        Image.HoverText = ContentNode.Attributes["alt"].Value;
-                        Image.Title = ContentNode.Attributes["title"].Value;
-                        Image.Width = ToInt32(ContentNode.Attributes["width"]);
-                        Image.Height = ToInt32(ContentNode.Attributes["height"]);
-                        subPod.PodImage = Image;
+                        WolframAlphaImage image = new WolframAlphaImage();
+                        image.Location = new Uri(contentNode.Attributes["src"].Value);
+                        image.HoverText = contentNode.Attributes["alt"].Value;
+                        image.Title = contentNode.Attributes["title"].Value;
+                        image.Width = ToInt32(contentNode.Attributes["width"]);
+                        image.Height = ToInt32(contentNode.Attributes["height"]);
+                        subPod.PodImage = image;
                     }
 
-                    Pod.SubPods.Add(subPod);
+                    pod.SubPods.Add(subPod);
                 }
 
-                _queryResult.Pods.Add(Pod);
+                _queryResult.Pods.Add(pod);
             }
 
             return _queryResult;

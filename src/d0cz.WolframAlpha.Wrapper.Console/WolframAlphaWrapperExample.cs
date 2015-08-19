@@ -17,23 +17,32 @@ namespace d0cz.WolframAlpha.Wrapper.Console
             {
                 File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\Wolfram Alpha wrapper log.log");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // ignored
+                Output($"An error has occurred when deleting the wrapper log \\ {ex.Message}", 0, ConsoleColor.Red);
             }
 
             //Define what our application ID is.
             string wolframAlphaApplicationId = ConfigurationManager.AppSettings.GetValues("APP_NAME")?.First();
 
             //Define what we want to search for.
-            string WolframAlphaSearchTerms = "england";
+            string wolframAlphaSearchTerms = "play 440Hz sine wave";
 
             //Print out what we're about to do in the console.
-            Output($"Getting response for the search terms \\ { WolframAlphaSearchTerms } \\ and the application ID string \\ { wolframAlphaApplicationId } \\  ...", 0, ConsoleColor.White);
+            Output($"Getting response for the search terms \\ { wolframAlphaSearchTerms } \\ and the application ID string \\ { wolframAlphaApplicationId } \\  ...", 0, ConsoleColor.White);
 
             //Use the engine to get a response, from the application ID specified, and the search terms.
             //Engine.LoadResponse(WolframAlphaSearchTerms, wolframAlphaApplicationId);
-            Engine.LoadResponse(new WolframAlphaQuery() {Format = "plaintext", AllowCaching = false, APIKey = Engine.ApiKey, Query = WolframAlphaSearchTerms});
+            var query = new WolframAlphaQuery
+            {
+                APIKey = Engine.ApiKey,
+                Query = wolframAlphaSearchTerms,
+                Format = WolframAlphaQueryFormatEnum.Wav,
+                AllowCaching = false
+            };
+
+            Engine.ValidateQuery(query);
+            Engine.LoadResponse(query);
 
             //Print out a message saying that the last task was successful.
             Output("Response injected.", 0, ConsoleColor.White);
@@ -98,10 +107,12 @@ namespace d0cz.WolframAlpha.Wrapper.Console
             System.Console.WriteLine(data);
             System.Console.ForegroundColor = ConsoleColor.White;
 
-            StreamWriter writer = new StreamWriter($"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)} \\Wolfram Alpha wrapper log.log", true);
-            writer.WriteLine(data);
-            writer.Close();
-            writer.Dispose();
+            var outputPath = $"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)} \\Wolfram Alpha wrapper log.log";
+
+            using (StreamWriter writer = new StreamWriter(outputPath, true))
+            {
+                writer.WriteLine(data);
+            }
         }
     }
 }
