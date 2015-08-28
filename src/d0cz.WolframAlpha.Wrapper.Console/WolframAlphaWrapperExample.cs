@@ -26,7 +26,7 @@ namespace d0cz.WolframAlpha.Wrapper.Console
             string wolframAlphaApplicationId = ConfigurationManager.AppSettings.GetValues("APP_NAME")?.First();
 
             //Define what we want to search for.
-            string wolframAlphaSearchTerms = "play 440Hz sine wave";
+            string wolframAlphaSearchTerms = "pi";
 
             //Print out what we're about to do in the console.
             Output($"Getting response for the search terms \\ { wolframAlphaSearchTerms } \\ and the application ID string \\ { wolframAlphaApplicationId } \\  ...", 0, ConsoleColor.White);
@@ -37,7 +37,7 @@ namespace d0cz.WolframAlpha.Wrapper.Console
             {
                 APIKey = Engine.ApiKey,
                 Query = wolframAlphaSearchTerms,
-                Format = WolframAlphaQueryFormatEnum.Wav,
+                Format = WolframAlphaQueryFormatEnum.PlainText,
                 AllowCaching = false
             };
 

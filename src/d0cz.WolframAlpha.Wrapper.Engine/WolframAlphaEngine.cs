@@ -65,46 +65,59 @@ namespace d0cz.WolframAlpha.Wrapper.Engine
 
         public WolframAlphaValidationResult ValidateQuery(XmlDocument response)
         {
-            Thread.Sleep(1);
+            //Thread.Sleep(1);
 
             XmlNode mainNode = response.SelectNodes("/validatequeryresult")?.Item(0);
 
             if (mainNode == null) return null;
 
-            _validationResult = new WolframAlphaValidationResult();
-
-            _validationResult.Success = ToBoolean(mainNode.Attributes?["success"]);
-            _validationResult.ErrorOccured = ToBoolean(mainNode.Attributes?["error"]);
-            _validationResult.Timing = ToDouble(mainNode.Attributes?["timing"]);
-            _validationResult.ParseData = mainNode.SelectNodes("parsedata")?.Item(0)?.InnerText;
-
-            //PARSE TIMING?
-
-            _validationResult.Assumptions = new List<WolframAlphaAssumption>();
-
+            _validationResult = new WolframAlphaValidationResult
+            {
+                Version = ToDecimal(mainNode.Attributes?["version"]),
+                ParseTiming = ToDouble(mainNode.Attributes?["parsetiming"]),
+                Timing = ToDouble(mainNode.Attributes?["timing"]),
+                Error = ToBoolean(mainNode.Attributes?["error"]),
+                Success = ToBoolean(mainNode.Attributes?["success"]),
+                Assumptions = new List<WolframAlphaAssumption>()
+            };
 
             foreach (XmlNode node in mainNode.SelectNodes("assumptions"))
             {
-                Thread.Sleep(1);
+                //Thread.Sleep(1);
 
-                WolframAlphaAssumption assumption = new WolframAlphaAssumption();
-                assumption.Word = node.SelectNodes("word")?.Item(0)?.InnerText;
+                var assumptionNode = node.SelectSingleNode("assumption");
 
-                XmlNode subNode = node.SelectNodes("categories")?.Item(0);
-
-                foreach (XmlNode contentNode in subNode.SelectNodes("category"))
+                if (assumptionNode != null)
                 {
-                    Thread.Sleep(1);
+                    var assumption = new WolframAlphaAssumption
+                    {
+                        Template = assumptionNode.Attributes?["template"].Value,
+                        Word = assumptionNode.Attributes?["word"].Value,
+                        Type = assumptionNode.Attributes?["type"].Value
+                    };
 
-                    assumption.Categories.Add(contentNode.InnerText);
+                    if (assumptionNode.HasChildNodes)
+                    {
+                        assumption.Values = new List<AssumptionValue>();
+
+                        foreach (XmlNode valueNode in assumptionNode.ChildNodes)
+                        {
+                            //Thread.Sleep(1);
+
+                            assumption.Values.Add(new AssumptionValue
+                            {
+                                Input = valueNode.Attributes?["input"].Value,
+                                Description = valueNode.Attributes?["desc"].Value,
+                                Name = valueNode.Attributes?["name"].Value
+                            });
+                        }
+                    }
+
+                    _validationResult.Assumptions.Add(assumption);
                 }
-
-                _validationResult.Assumptions.Add(assumption);
-
             }
 
             return _validationResult;
-
         }
 
         private static bool ToBoolean(XmlNode xmlNode)
@@ -120,6 +133,11 @@ namespace d0cz.WolframAlpha.Wrapper.Engine
         private static int ToInt32(XmlNode xmlNode)
         {
             return Convert.ToInt32(xmlNode.Value);
+        }
+
+        private static decimal ToDecimal(XmlNode xmlNode)
+        {
+            return Convert.ToDecimal(xmlNode.Value);
         }
 
         #endregion

@@ -4,41 +4,16 @@ namespace d0cz.WolframAlpha.Wrapper.Engine
 {
     public class WolframAlphaValidationResult
     {
-        private string _parseData;
-        private List<WolframAlphaAssumption> _assumptions;
-        private bool _success;
-        private bool _error;
-        private double _timing;
+        public decimal Version { get; set; }
 
-        public bool Success
-        {
-            get { return _success; }
-            set { _success = value; }
-        }
+        public double ParseTiming { get; set; }
 
-        public string ParseData
-        {
-            get { return _parseData; }
-            set { _parseData = value; }
-        }
+        public double Timing { get; set; }
+        
+        public bool Error { get; set; }
 
-        public List<WolframAlphaAssumption> Assumptions
-        {
-            get { return _assumptions; }
-            set { _assumptions = value; }
-        }
+        public bool Success { get; set; }
 
-        public bool ErrorOccured
-        {
-            get { return _error; }
-            set { _error = value; }
-        }
-
-        public double Timing
-        {
-            get { return _timing; }
-            set { _timing = value; }
-        }
-
+        public List<WolframAlphaAssumption> Assumptions { get; set; }
     }
 }
