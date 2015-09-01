@@ -10,12 +10,14 @@ namespace d0cz.WolframAlpha.Wrapper.Console
     {
         static readonly WolframAlphaEngine Engine = new WolframAlphaEngine(ConfigurationManager.AppSettings.GetValues("APP_ID")?.First());
 
+        private static readonly string WrapperLogPath = $"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\\Wolfram Alpha wrapper log.log";
+
         public static void Main()
         {
             //Try to delete the log file if it already exists.
             try
             {
-                File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\Wolfram Alpha wrapper log.log");
+                File.Delete(WrapperLogPath);
             }
             catch (Exception ex)
             {
@@ -107,9 +109,7 @@ namespace d0cz.WolframAlpha.Wrapper.Console
             System.Console.WriteLine(data);
             System.Console.ForegroundColor = ConsoleColor.White;
 
-            var outputPath = $"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)} \\Wolfram Alpha wrapper log.log";
-
-            using (StreamWriter writer = new StreamWriter(outputPath, true))
+            using (StreamWriter writer = new StreamWriter(WrapperLogPath, true))
             {
                 writer.WriteLine(data);
             }

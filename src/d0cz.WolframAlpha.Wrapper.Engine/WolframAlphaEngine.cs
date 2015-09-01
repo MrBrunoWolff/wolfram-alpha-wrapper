@@ -120,26 +120,6 @@ namespace d0cz.WolframAlpha.Wrapper.Engine
             return _validationResult;
         }
 
-        private static bool ToBoolean(XmlNode xmlNode)
-        {
-            return Convert.ToBoolean(xmlNode.Value);
-        }
-
-        private static double ToDouble(XmlNode xmlNode)
-        {
-            return Convert.ToDouble(xmlNode.Value);
-        }
-
-        private static int ToInt32(XmlNode xmlNode)
-        {
-            return Convert.ToInt32(xmlNode.Value);
-        }
-
-        private static decimal ToDecimal(XmlNode xmlNode)
-        {
-            return Convert.ToDecimal(xmlNode.Value);
-        }
-
         #endregion
 
         #region "Overloads of LoadResponse"
@@ -250,5 +230,25 @@ namespace d0cz.WolframAlpha.Wrapper.Engine
         }
 
         #endregion
+
+        private static bool ToBoolean(XmlNode xmlNode)
+        {
+            return Convert.ToBoolean(xmlNode.Value);
+        }
+
+        private static double ToDouble(XmlNode xmlNode)
+        {
+            return Convert.ToDouble(xmlNode.Value);
+        }
+
+        private static int ToInt32(XmlNode xmlNode)
+        {
+            return Convert.ToInt32(xmlNode.Value);
+        }
+
+        private static decimal ToDecimal(XmlNode xmlNode)
+        {
+            return Convert.ToDecimal(xmlNode.Value);
+        }
     }
 }
